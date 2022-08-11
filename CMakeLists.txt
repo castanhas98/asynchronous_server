@@ -4,11 +4,15 @@ project(async_server)
 set(CMAKE_CXX_STANDARD 17)
 
 find_package(Threads)
-find_package(Boost COMPONENTS system REQUIRED) # asio requires system
+find_package(Boost COMPONENTS system thread REQUIRED) # asio requires system
 
 set(ASYNC_SERVER_FILES
-  #{PROJECT_SOURCE_DIR}/file_name.cpp
+  # ${PROJECT_SOURCE_DIR}/file_name.cpp
+  ${PROJECT_SOURCE_DIR}/src/server.cpp
+  ${PROJECT_SOURCE_DIR}/src/client.cpp
 )
+
+include_directories(include)
 
 function(add_exec arg1)
   add_executable(${arg1}
@@ -21,11 +25,13 @@ function(add_exec arg1)
     "${Boost_LIBRARIES}"
   )  
 
+  target_include_directories(${arg1} PUBLIC
+    "${PROJECT_SOURCE_DIR}/include"
+  )
+
   target_compile_features(${arg1} PRIVATE cxx_std_17)  
 endfunction()
 
-add_exec(server)
-
-# add_executable(server server.cpp)
-# target_link_libraries(server Boost::system Threads::Threads)
+add_exec(launch_server)
+add_exec(launch_client)
 

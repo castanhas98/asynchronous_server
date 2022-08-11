@@ -1,0 +1,9 @@
+#ifndef ASYNCHRONOUS_SERVER_SERVER_HPP
+#define ASYNCHRONOUS_SERVER_SERVER_HPP
+
+class Server {
+  public:
+    Server();
+};
+
+#endif // ASYNCHRONOUS_SERVER_SERVER_HPP
