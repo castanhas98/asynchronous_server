@@ -10,6 +10,7 @@ set(ASYNC_SERVER_FILES
   # ${PROJECT_SOURCE_DIR}/file_name.cpp
   ${PROJECT_SOURCE_DIR}/src/server.cpp
   ${PROJECT_SOURCE_DIR}/src/client.cpp
+  ${PROJECT_SOURCE_DIR}/src/session.cpp
 )
 
 include_directories(include)

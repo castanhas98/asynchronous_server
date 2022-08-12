@@ -10,5 +10,5 @@ cd build || {
 cmake -DCMAKE_PREFIX_PATH="${CONDA_PREFIX}" \
       ..
 
-cmake --build . -- -j 4
+cmake --build . # -- -j 4
 

@@ -1,41 +1,32 @@
-#include "include/server.hpp"
+#include "server.hpp"
+#include "constants.hpp"
 
 #include <iostream>
-#include <boost/asio.hpp>
-#include <memory>
-#include <boost/thread.hpp>
+#include <exception>
 
-void WorkerThread( boost::shared_ptr< boost::asio::io_service > io_service )
-{
-  std::cout << "Thread Start\n";
-  io_service->run();
-  std::cout << "Thread Finish\n";
-}
 
-int main( int argc, char * argv[] )
-{
-  Server serv;
+using std::cout;
+using std::endl;
 
-  boost::shared_ptr< boost::asio::io_service > io_service(
-    new boost::asio::io_service
-  );
-  boost::shared_ptr< boost::asio::io_service::work > work(
-    new boost::asio::io_service::work( *io_service )
-  );
+int main(int argc, char *argv[]) {
 
-  std::cout << "Press [return] to exit." << std::endl;
+  int server_port = DEFAULT_PORT;
+  try {
+    // can add more error checking for whether the porpt number is valid
+    if(argc == 2)
+      server_port = std::stoi(argv[1]);
+    else if(argc > 2) {
+      std::cerr << "Invalid amount of arguments. Intended usage: ./launch_server <server_port>" << std::endl;
+      return 0;
+    }
 
-  boost::thread_group worker_threads;
-  for( int x = 0; x < 4; ++x )
-  {
-    worker_threads.create_thread( boost::bind( &WorkerThread, io_service ) );
+    cout << server_port << endl;
+
+    // Server server;
   }
-
-  std::cin.get();
-
-  io_service->stop();
-
-  worker_threads.join_all();
+  catch(std::exception& e) {
+    std::cerr << "Exception: " << e.what() << std::endl;
+  }
 
   return 0;
 }
