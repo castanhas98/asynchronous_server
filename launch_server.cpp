@@ -19,12 +19,14 @@ int main(int argc, char *argv[]) {
       server_port = std::stoi(argv[1]);
     else if(argc > 2) {
       std::cerr << "Invalid amount of arguments. Intended usage: ./launch_server <server_port>" << std::endl;
-      return 0;
+      return 1;
     }
 
     boost::asio::io_context io_context;
 
     Server server(io_context, server_port);
+
+    io_context.run();
   }
   catch(std::exception& e) {
     std::cerr << "Exception: " << e.what() << std::endl;
