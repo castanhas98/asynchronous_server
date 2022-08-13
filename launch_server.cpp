@@ -4,13 +4,15 @@
 #include <iostream>
 #include <exception>
 
+#include <boost/asio.hpp>
+
 
 using std::cout;
 using std::endl;
 
 int main(int argc, char *argv[]) {
 
-  int server_port = DEFAULT_PORT;
+  unsigned short server_port = DEFAULT_PORT;
   try {
     // can add more error checking for whether the porpt number is valid
     if(argc == 2)
@@ -20,9 +22,9 @@ int main(int argc, char *argv[]) {
       return 0;
     }
 
-    cout << server_port << endl;
+    boost::asio::io_context io_context;
 
-    // Server server;
+    Server server(io_context, server_port);
   }
   catch(std::exception& e) {
     std::cerr << "Exception: " << e.what() << std::endl;
