@@ -14,6 +14,10 @@ public:
 
   void start();
 
+  boost::asio::ip::address get_endpoint_ip_address();
+
+  boost::asio::ip::port_type get_endpoint_port();
+
 private:
   void do_read();
 

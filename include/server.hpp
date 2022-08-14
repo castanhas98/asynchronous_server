@@ -4,6 +4,7 @@
 #include "session.hpp"
 
 #include <memory>
+#include <set>
 
 #include <boost/asio.hpp>
 
@@ -22,9 +23,14 @@ public:
 private:
   void do_accept();
 
+  void print_active_sessions();
+
 private:
   boost::asio::ip::tcp::acceptor tcp_acceptor_;
   // boost::asio::ip::udp::acceptor udp_acceptor_;
+
+  // CHANGE FOR THREAD-SAFE
+  std::set<std::shared_ptr<Session>> active_sessions_;
 };
 
 #endif // ASYNCHRONOUS_SERVER_SERVER_HPP

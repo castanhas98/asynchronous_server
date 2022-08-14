@@ -17,11 +17,22 @@ void Server::do_accept() {
   tcp_acceptor_.async_accept(
     [this](boost::system::error_code ec, boost::asio::ip::tcp::socket tcp_socket) {
       if(!ec) {
-        std::cout << "ACCEPTED" << std::endl;
-        std::make_shared<Session>(std::move(tcp_socket))->start();
-        std::cout << "ENDED" << std::endl;
+        std::shared_ptr<Session> new_session = 
+          std::make_shared<Session>(std::move(tcp_socket));
+        
+        new_session->start();
+
+        active_sessions_.insert(new_session);
+        print_active_sessions();
       }
       do_accept();
     }
   );
+}
+
+void Server::print_active_sessions() {
+  std::cout << "Printing the IP addresses of clients in active sessions:" << std::endl;
+  for(const auto &it: active_sessions_)
+    std::cout << it->get_endpoint_ip_address() << ":"
+              << it->get_endpoint_port() << std::endl;
 }
