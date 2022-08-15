@@ -4,11 +4,17 @@
 #include <iostream>
 #include <exception>
 
+#include <thread>
+
 #include <boost/asio.hpp>
 
 
 using std::cout;
 using std::endl;
+
+void async_start_server(boost::asio::io_context& io_context, unsigned short &port) {
+  Server server(io_context, port);
+}
 
 int main(int argc, char *argv[]) {
 
@@ -23,10 +29,11 @@ int main(int argc, char *argv[]) {
     }
 
     boost::asio::io_context io_context;
-
+    
     Server server(io_context, server_port);
-
+    
     io_context.run();
+
   }
   catch(std::exception& e) {
     std::cerr << "Exception: " << e.what() << std::endl;
