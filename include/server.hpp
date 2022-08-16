@@ -2,6 +2,7 @@
 #define ASYNCHRONOUS_SERVER_SERVER_HPP
 
 #include "session.hpp"
+#include "threadsafe_map.hpp"
 
 #include <memory>
 #include <set>

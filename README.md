@@ -16,4 +16,4 @@ To do (High to Low priority timeline-wise):
       - Creating a chat session that many clients can join
     - Client UI
   - Thread-safe session bookkeeping data structure
-  
+  - Understand why we need a default value in the thread-safe map.
