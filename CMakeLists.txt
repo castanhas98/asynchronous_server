@@ -35,4 +35,5 @@ endfunction()
 
 add_exec(launch_server)
 add_exec(launch_client)
+add_exec(test_map)
 
