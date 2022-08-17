@@ -7,6 +7,8 @@ Ideas:
 
 To do (High to Low priority timeline-wise):
   - Chat between clients:
+    - Clients can have username!
+    - Only print message for the other clients, don't do echo.
     - Chat between two clients
       - Sessions are managed by the server?
       - Client message needs to have a header and a body:
@@ -15,5 +17,5 @@ To do (High to Low priority timeline-wise):
           - Exit message deletes the session from the client's set and closes it.
       - Creating a chat session that many clients can join
     - Client UI
-  - Thread-safe session bookkeeping data structure
   - Understand why we need a default value in the thread-safe map.
+  - Understand why we need to delete copy constructor and copy assignment operator. Appendix A.2.

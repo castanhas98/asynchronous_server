@@ -1,6 +1,8 @@
 #ifndef ASYNCHRONOUS_SERVER_SESSION_HPP
 #define ASYNCHRONOUS_SERVER_SESSION_HPP
 
+#include "chat.hpp"
+
 #include <array>
 #include <memory>
 
@@ -10,7 +12,8 @@ class Session : public std::enable_shared_from_this<Session> {
 public:
   Session(boost::asio::ip::tcp::socket tcp_socket);
 
-  // boost::asio::ip::tcp::socket& get_tcp_socket();
+  const boost::asio::ip::tcp::socket& get_tcp_socket() const;
+  boost::asio::ip::tcp::socket& get_tcp_socket();
 
   void start();
 

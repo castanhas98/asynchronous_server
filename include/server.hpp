@@ -2,10 +2,11 @@
 #define ASYNCHRONOUS_SERVER_SERVER_HPP
 
 #include "session.hpp"
-#include "threadsafe_map.hpp"
+#include "threadsafe_data_structures.hpp"
 
 #include <memory>
 #include <set>
+#include <string>
 #include <thread>
 
 #include <boost/asio.hpp>
@@ -37,7 +38,9 @@ private:
   // boost::asio::ip::udp::acceptor udp_acceptor_;
 
   // CHANGE FOR THREAD-SAFE
-  std::set<std::shared_ptr<Session>> active_sessions_;
+  // std::set<std::shared_ptr<Session>> active_sessions_;
+
+  ThreadsafeMap<std::string, std::shared_ptr<Session>> active_sessions_;
 
   std::thread console_thread_;
 

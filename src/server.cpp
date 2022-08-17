@@ -2,7 +2,9 @@
 #include "session.hpp"
 
 #include <iostream>
+#include <map>
 #include <memory>
+#include <string>
 #include <thread>
 
 #include <chrono>
@@ -34,7 +36,11 @@ void Server::do_accept() {
           
           new_session->start();
 
-          active_sessions_.insert(new_session);
+          // active_sessions_.insert(new_session);
+          active_sessions_.insert_or_update(
+            new_session->get_endpoint_ip_address().to_string() + ":" + std::to_string(new_session->get_endpoint_port()),
+            new_session
+          );
           // print_active_sessions();
         }
         do_accept();
@@ -46,12 +52,22 @@ void Server::do_accept() {
 
 void Server::print_active_sessions() {
   std::cout << "[" << std::this_thread::get_id() << "] ";
-  std::cout << "Printing the IP addresses of clients in active sessions:" << std::endl;
-  for(const auto &it: active_sessions_) {
-    std::cout << "[" << std::this_thread::get_id() << "] ";
-    std::cout << it->get_endpoint_ip_address() << ":"
-              << it->get_endpoint_port() << std::endl;
+  std::map<std::string, std::shared_ptr<Session>> active_sessions_snapshot(
+    active_sessions_.get_map()
+  );
+  
+  if(active_sessions_snapshot.size() > 0) {
+    std::cout << "Printing the IP addresses of clients in active sessions:" << std::endl;
+    for(const auto &it : active_sessions_snapshot) {
+      std::cout << "[" << std::this_thread::get_id() << "] ";
+      std::cout << it.first << std::endl;
+
+      if(it.second->get_tcp_socket().is_open())
+        std::cout << "IS OPEN" << std::endl;  
+    }
   }
+  else
+    std::cout << "There are no active sessions." << std::endl;
 }
 
 void Server::handle_console() {

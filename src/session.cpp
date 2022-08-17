@@ -13,9 +13,13 @@ Session::Session(boost::asio::ip::tcp::socket tcp_socket)
             << tcp_socket_.remote_endpoint().port() << "." << std::endl;
 }
 
-// boost::asio::ip::tcp::socket& Session::get_tcp_socket() {
-//   return tcp_socket_;
-// }
+const boost::asio::ip::tcp::socket& Session::get_tcp_socket() const {
+  return tcp_socket_;
+}
+
+boost::asio::ip::tcp::socket& Session::get_tcp_socket() {
+  return tcp_socket_;
+}
 
 void Session::start() {
   do_read();
