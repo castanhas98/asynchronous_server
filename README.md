@@ -1,5 +1,7 @@
 # Asynchronous Server
 
+Based on examples from boost::asio and C++ Concurrency in Action.
+
 Ideas:
 - `top`-like command, that says how many clients are using the server.
 - Supporting tcp and udp clients.

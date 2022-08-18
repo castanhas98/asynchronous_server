@@ -1,5 +1,6 @@
 #include "server.hpp"
 #include "session.hpp"
+#include "threadsafe_data_structures.hpp"
 
 #include <iostream>
 #include <map>
@@ -11,10 +12,10 @@
 
 #include <boost/asio.hpp>
 
-Server::Server(boost::asio::io_context& io_context, unsigned short port) 
+Server::Server(boost::asio::io_context& io_context, unsigned short port, unsigned short number_of_rooms) 
 : tcp_acceptor_(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
-  server_online_(true) {
-
+  server_online_(true),
+  chat_rooms_(number_of_rooms) {
     // Spawns a thread that will deal with console inputs on the server
     // This thread is joined in the Server's destructur, which should
     // only be called after the thread has no work left anyway.
@@ -32,7 +33,7 @@ void Server::do_accept() {
       [this](boost::system::error_code ec, boost::asio::ip::tcp::socket tcp_socket) {
         if(!ec) {
           std::shared_ptr<Session> new_session = 
-            std::make_shared<Session>(std::move(tcp_socket));
+            std::make_shared<Session>(std::move(tcp_socket), room_);
           
           new_session->start();
 

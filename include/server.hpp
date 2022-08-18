@@ -1,6 +1,7 @@
 #ifndef ASYNCHRONOUS_SERVER_SERVER_HPP
 #define ASYNCHRONOUS_SERVER_SERVER_HPP
 
+#include "chat.hpp"
 #include "session.hpp"
 #include "threadsafe_data_structures.hpp"
 
@@ -21,7 +22,7 @@ public:
    * @param io_service 
    * @param port 
    */
-  Server(boost::asio::io_context& io_context, unsigned short port);
+  Server(boost::asio::io_context& io_context, unsigned short port, unsigned short number_of_rooms=8);
 
 
   ~Server();
@@ -37,14 +38,15 @@ private:
   boost::asio::ip::tcp::acceptor tcp_acceptor_;
   // boost::asio::ip::udp::acceptor udp_acceptor_;
 
-  // CHANGE FOR THREAD-SAFE
-  // std::set<std::shared_ptr<Session>> active_sessions_;
-
   ThreadsafeMap<std::string, std::shared_ptr<Session>> active_sessions_;
 
   std::thread console_thread_;
 
   bool server_online_;
+
+  ChatRoom room_;
+
+  std::vector<ThreadsafeSet<std::string>> chat_rooms_;
 };
 
 #endif // ASYNCHRONOUS_SERVER_SERVER_HPP
