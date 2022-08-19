@@ -48,8 +48,9 @@ class Client {
 
     std::thread io_context_thread_;
 
-    char user_name_[11];
+    char user_name_[10 + 1];
 
+    char ip_and_port_[15 + 1 + 5 + 1];
 };
 
 #endif // ASYNCHRONOUS_SERVER_CLIENT_HPP

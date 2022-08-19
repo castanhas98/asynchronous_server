@@ -7,11 +7,14 @@
 Session::Session(boost::asio::ip::tcp::socket tcp_socket, ChatRoom& room)
 : tcp_socket_(std::move(tcp_socket)),
   room_(room) {
-  std::cout << "[" << std::this_thread::get_id() << "] ";
+  std::cout << "\n[" << std::this_thread::get_id() << "] ";
   std::cout << "Connection established with " 
             << tcp_socket_.remote_endpoint().address() 
             << " on port " 
             << tcp_socket_.remote_endpoint().port() << "." << std::endl;
+  std::cout << ">>> ";
+  std::flush(std::cout); // print the >>>
+
 }
 
 const boost::asio::ip::tcp::socket& Session::get_tcp_socket() const {
@@ -54,7 +57,7 @@ void Session::do_read_body()
     boost::asio::buffer(read_msg_.body(), read_msg_.body_length()),
     [this, self](boost::system::error_code ec, std::size_t /*length*/) {
       if(!ec) {
-        room_.deliver(read_msg_);
+        room_.deliver(read_msg_, self);
         do_read_header();
       }
       else

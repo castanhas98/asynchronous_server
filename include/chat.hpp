@@ -15,6 +15,8 @@ class ChatMessage {
 public:
   static constexpr std::size_t max_body_length_ = 512;
   static constexpr std::size_t header_length_ = 4;
+  // user_name + ip + ':' + port
+  static constexpr std::size_t user_name_length_ =  10 + 15 + 1 + 5;
 
 
   ChatMessage();
@@ -37,16 +39,17 @@ public:
 
   void encode_header();
 
+  void encode_sender(char* user_name, char* ip_and_port);
+
   // void fill(const char c);
 
 private:
-  char data_[max_body_length_];
+  char data_[header_length_ + user_name_length_ + max_body_length_];
   // std::pair<std::string, std::string> nickname_ip_;
   std::size_t body_length_;
 };
 
-class ChatParticipant
-{
+class ChatParticipant {
 public:
   virtual ~ChatParticipant() {}
   virtual void deliver(const ChatMessage& msg) = 0;
@@ -61,7 +64,7 @@ public:
   {
     participants_.insert(participant);
     for (auto msg: recent_messages_)
-      participant->deliver(msg);
+      participant->deliver(msg.first); // msg.first is the message, msg.second is the sender
   }
 
   void leave(std::shared_ptr<ChatParticipant> participant)
@@ -69,14 +72,16 @@ public:
     participants_.erase(participant);
   }
 
-  void deliver(const ChatMessage& msg)
+  void deliver(const ChatMessage& msg, const std::shared_ptr<ChatParticipant>& sender)
   {
-    recent_messages_.push_back(msg);
+    recent_messages_.push_back({msg, sender});
     while (recent_messages_.size() > max_recent_msgs_)
       recent_messages_.pop_front();
 
-    for (auto participant: participants_) 
-      participant->deliver(msg);
+    for (auto participant: participants_) {
+      if(participant != sender)
+        participant->deliver(msg);
+    }
 
     // std::cout << "PRINTING PARTICIPANTS:" << std::endl;
     // for (auto participant: participants_) 
@@ -86,9 +91,10 @@ public:
   }
 
 private:
-  std::set<std::shared_ptr<ChatParticipant>> participants_;
+  std::set<std::shared_ptr<ChatParticipant>> participants_; // Change to threadsafe
   static constexpr unsigned int max_recent_msgs_ = 100 ;
-  std::deque<ChatMessage> recent_messages_;
+  // std::deque<ChatMessage> recent_messages_;
+  std::deque<std::pair<ChatMessage, std::shared_ptr<ChatParticipant>>> recent_messages_;
 };
 
 

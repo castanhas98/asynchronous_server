@@ -1,6 +1,7 @@
 #include "chat.hpp"
 #include "client.hpp"
 
+#include <algorithm>
 #include <array>
 #include <cstdlib>
 #include <iostream>
@@ -19,6 +20,24 @@ tcp_resolver_(io_context) {
   std::memcpy(user_name_, &user_name[0], user_name.size());
 
   do_connect(server_ip, server_port);
+
+  // fill in the ip_and_port string with a padded ip and port
+  std::size_t max_length_ip = 15;
+  std::size_t max_length_port = 5;
+  auto ip_and_port = std::string(
+    max_length_ip - std::min(
+      max_length_ip, tcp_socket_.local_endpoint().address().to_string().size()
+    ), 
+    ' '
+  ) 
+  + tcp_socket_.local_endpoint().address().to_string();
+  ip_and_port = ip_and_port + ":" + std::to_string(tcp_socket_.local_endpoint().port()) +
+  std::string(max_length_port - std::min(
+    max_length_port, std::to_string(tcp_socket_.local_endpoint().port()).size()),
+      ' ');
+  // std::cout << ip_and_port << std::endl;
+  std::memcpy(ip_and_port_, &ip_and_port[0], ip_and_port.size());
+  // std::cout.write(ip_and_port_, ip_and_port.size());
 
   // thread to run the io_context after connecting
   io_context_thread_ = std::thread([&io_context](){ io_context.run(); });
@@ -80,7 +99,10 @@ void Client::do_get_messages() {
     msg.body_length(std::strlen(line));
     std::memcpy(msg.body(), line, msg.body_length());
     msg.encode_header();
+    // msg.encode_sender(user_name_, ip_and_port_); 
+
     write(msg);
+
   }
 }
 
