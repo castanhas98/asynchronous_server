@@ -25,9 +25,6 @@ public:
   void deliver(const ChatMessage& msg);
 
 private:
-  void do_read();
-
-  void do_write(std::size_t length);
 
   void do_write();
 

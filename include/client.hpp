@@ -14,7 +14,8 @@ class Client {
     Client(
       boost::asio::io_context& io_context, 
       std::string& server_ip,
-      std::string& server_port
+      std::string& server_port,
+      std::string& user_name
     );
 
     ~Client();
@@ -41,16 +42,13 @@ class Client {
 
     boost::asio::ip::tcp::resolver tcp_resolver_;
 
-    std::array<char, 1024> message_;
-
-    std::array<char, 1024> reply_;
-
     ChatMessage read_msg_;
 
     std::deque<ChatMessage> write_msgs_;
 
     std::thread io_context_thread_;
 
+    char user_name_[11];
 
 };
 

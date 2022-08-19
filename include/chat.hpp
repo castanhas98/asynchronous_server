@@ -51,8 +51,8 @@ public:
   virtual ~ChatParticipant() {}
   virtual void deliver(const ChatMessage& msg) = 0;
   // DELETE
-  virtual boost::asio::ip::address get_endpoint_ip_address() = 0;
-  virtual boost::asio::ip::port_type get_endpoint_port() = 0;
+  // virtual boost::asio::ip::address get_endpoint_ip_address() = 0;
+  // virtual boost::asio::ip::port_type get_endpoint_port() = 0;
 };
 
 class ChatRoom {
@@ -72,22 +72,22 @@ public:
   void deliver(const ChatMessage& msg)
   {
     recent_messages_.push_back(msg);
-    while (recent_messages_.size() > max_recent_msgs)
+    while (recent_messages_.size() > max_recent_msgs_)
       recent_messages_.pop_front();
 
     for (auto participant: participants_) 
       participant->deliver(msg);
 
-    std::cout << "PRINTING PARTICIPANTS:" << std::endl;
-    for (auto participant: participants_) 
-      std::cout << participant->get_endpoint_ip_address()
-                << ":" << participant->get_endpoint_port()
-                << std::endl;
+    // std::cout << "PRINTING PARTICIPANTS:" << std::endl;
+    // for (auto participant: participants_) 
+    //   std::cout << participant->get_endpoint_ip_address()
+    //             << ":" << participant->get_endpoint_port()
+    //             << std::endl;
   }
 
 private:
   std::set<std::shared_ptr<ChatParticipant>> participants_;
-  enum { max_recent_msgs = 100 };
+  static constexpr unsigned int max_recent_msgs_ = 100 ;
   std::deque<ChatMessage> recent_messages_;
 };
 

@@ -10,51 +10,25 @@
 Client::Client(
   boost::asio::io_context& io_context, 
   std::string& server_ip,
-  std::string& server_port
+  std::string& server_port,
+  std::string& user_name
 ) : 
 io_context_(io_context),
 tcp_socket_(io_context),
 tcp_resolver_(io_context) {
-  // boost::asio::connect(
-  //   tcp_socket_, 
-  //   tcp_resolver_.resolve(server_ip, server_port)
-  // );
+  std::memcpy(user_name_, &user_name[0], user_name.size());
+
   do_connect(server_ip, server_port);
 
-  //
+  // thread to run the io_context after connecting
   io_context_thread_ = std::thread([&io_context](){ io_context.run(); });
 
-  // do_echo();
+  // console
   do_get_messages();
 }
 
 Client::~Client() {
   io_context_thread_.join();
-}
-
-
-void Client::do_echo() {
-  while(true) {
-    message_.fill('\0');
-    reply_.fill('\0');
-
-    std::cout << "Enter message: ";
-    std::cin.getline(&message_[0], message_.max_size());
-
-    boost::asio::write(
-      tcp_socket_, 
-      boost::asio::buffer(message_, message_.size())
-    );
-
-    size_t reply_length = boost::asio::read(
-      tcp_socket_,
-      boost::asio::buffer(reply_, message_.size())
-    );
-
-    std::cout << "Reply is: ";
-    std::cout.write(&reply_[0], reply_.size());
-    std::cout << "\n";
-  }
 }
 
 void Client::do_connect(std::string& server_ip, std::string& server_port) {
@@ -69,13 +43,10 @@ void Client::do_connect(std::string& server_ip, std::string& server_port) {
 }
 
 void Client::do_read_header() {
-  std::cout << "In do read header:" << std::endl;
   boost::asio::async_read(
   tcp_socket_,
     boost::asio::buffer(read_msg_.data(), ChatMessage::header_length_),
-    [this](boost::system::error_code ec, std::size_t /*length*/)
-    {
-      std::cout << "Handler do read header:" << std::endl;
+    [this](boost::system::error_code ec, std::size_t /*length*/) {
       if(!ec && read_msg_.decode_header()) {
         do_read_body();
       }
@@ -86,12 +57,10 @@ void Client::do_read_header() {
 }
 
 void Client::do_read_body() {
-  std::cout << "In do read body:" << std::endl;
   boost::asio::async_read(
     tcp_socket_,
     boost::asio::buffer(read_msg_.body(), read_msg_.body_length()),
     [this](boost::system::error_code ec, std::size_t) {
-      std::cout << "Handler do read body:" << std::endl;
       if (!ec) {
         std::cout.write(read_msg_.body(), read_msg_.body_length());
         std::cout << "\n";
@@ -130,7 +99,6 @@ void Client::write(const ChatMessage& msg) {
 }
 
 void Client::do_write() {
-  std::cout << "Testing" << std::endl;
   boost::asio::async_write(
     tcp_socket_,
     boost::asio::buffer(write_msgs_.front().data(), write_msgs_.front().length()),
