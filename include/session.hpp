@@ -52,7 +52,7 @@ private:
   ChatMessage read_msg_;
   std::deque<ChatMessage> write_msgs_;
 
-  ChatRoom room_;
+  ChatRoom& room_;
 };
 
 

@@ -198,6 +198,7 @@ void Session::do_write(std::size_t length) {
 
 void Session::deliver(const ChatMessage& msg)
   {
+    std::cout << "We are delivering." << std::endl;
     bool write_in_progress = !write_msgs_.empty();
     write_msgs_.push_back(msg);
     if (!write_in_progress)

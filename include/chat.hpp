@@ -50,6 +50,9 @@ class ChatParticipant
 public:
   virtual ~ChatParticipant() {}
   virtual void deliver(const ChatMessage& msg) = 0;
+  // DELETE
+  virtual boost::asio::ip::address get_endpoint_ip_address() = 0;
+  virtual boost::asio::ip::port_type get_endpoint_port() = 0;
 };
 
 class ChatRoom {
@@ -72,8 +75,14 @@ public:
     while (recent_messages_.size() > max_recent_msgs)
       recent_messages_.pop_front();
 
-    for (auto participant: participants_)
+    for (auto participant: participants_) 
       participant->deliver(msg);
+
+    std::cout << "PRINTING PARTICIPANTS:" << std::endl;
+    for (auto participant: participants_) 
+      std::cout << participant->get_endpoint_ip_address()
+                << ":" << participant->get_endpoint_port()
+                << std::endl;
   }
 
 private:

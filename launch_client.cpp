@@ -21,11 +21,10 @@ int main(int argc, char *argv[]) {
               << host_ip << ":" << server_port << "." << std::endl;
 
     boost::asio::io_context io_context;
-    // std::thread t([&io_context](){ io_context.run(); });
 
     Client client(io_context, host_ip, server_port);
 
-    t.join();
+    // t.join();
 
   }
   catch(std::exception& e) {
