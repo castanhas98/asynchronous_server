@@ -4,14 +4,22 @@ ChatMessage::ChatMessage()
 : body_length_(0) {}
 
 std::size_t ChatMessage::length() const {
-  return header_length_ + body_length_;
+  return header_length_ + user_name_length_ + body_length_;
 }
 
 const char* ChatMessage::body() const {
-  return data_ + header_length_; // change these when there are headers
+  return data_ + header_length_ + user_name_length_; // change these when there are headers
 }
 
 char* ChatMessage::body() {
+  return data_ + header_length_ + user_name_length_; // change these when there are headers
+}
+
+const char* ChatMessage::body_with_sender() const {
+  return data_ + header_length_; // change these when there are headers
+}
+
+char* ChatMessage::body_with_sender() {
   return data_ + header_length_; // change these when there are headers
 }
 
@@ -21,6 +29,10 @@ const char* ChatMessage::data() const {
 
 char* ChatMessage::data() {
   return data_;
+}
+
+std::size_t ChatMessage::body_with_sender_length() const {
+  return user_name_length_ + body_length_;
 }
 
 std::size_t ChatMessage::body_length() const {
@@ -50,10 +62,6 @@ void ChatMessage::encode_header() {
 }
 
 void ChatMessage::encode_sender(char* user_name, char* ip_and_port) {
-  std::memcpy(data_, user_name, 10);
-  std::memcpy(data_ + 10, ip_and_port, 21);
+  std::memcpy(data_ + header_length_, user_name, 10);
+  std::memcpy(data_ + header_length_ + 10, ip_and_port, user_name_length_ - 10);
 }
-
-// void ChatMessage::fill(const char c) {
-//   data_.fill(c);
-// }

@@ -15,8 +15,8 @@ class ChatMessage {
 public:
   static constexpr std::size_t max_body_length_ = 512;
   static constexpr std::size_t header_length_ = 4;
-  // user_name + ip + ':' + port
-  static constexpr std::size_t user_name_length_ =  10 + 15 + 1 + 5;
+  // user_name + '@' + ip + ':' + port + ": "
+  static constexpr std::size_t user_name_length_ =  10 + 1 + 15 + 1 + 5 + 2;
 
 
   ChatMessage();
@@ -27,9 +27,15 @@ public:
 
   char* body();
 
+  const char* body_with_sender() const;
+
+  char* body_with_sender();
+
   const char* data() const;
 
   char* data();
+
+  std::size_t body_with_sender_length() const;
 
   std::size_t body_length() const;
 
@@ -40,8 +46,6 @@ public:
   void encode_header();
 
   void encode_sender(char* user_name, char* ip_and_port);
-
-  // void fill(const char c);
 
 private:
   char data_[header_length_ + user_name_length_ + max_body_length_];

@@ -54,7 +54,7 @@ void Session::do_read_body()
   auto self(shared_from_this());
   boost::asio::async_read(
     tcp_socket_,
-    boost::asio::buffer(read_msg_.body(), read_msg_.body_length()),
+    boost::asio::buffer(read_msg_.body_with_sender(), read_msg_.body_with_sender_length()),
     [this, self](boost::system::error_code ec, std::size_t /*length*/) {
       if(!ec) {
         room_.deliver(read_msg_, self);
@@ -99,12 +99,6 @@ void Session::deliver(const ChatMessage& msg)
 
   }
 
-void Session::print_data() {
-  std::cout << "[" << std::this_thread::get_id() << "] ";
-  for(int i = 0; i < data_.size() && data_[i] != '\0'; ++i)
-    std::cout << data_[i];
-  std::cout << std::endl;
-}
 
 boost::asio::ip::address Session::get_endpoint_ip_address() {
   return tcp_socket_.remote_endpoint().address();

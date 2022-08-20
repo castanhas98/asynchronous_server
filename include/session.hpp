@@ -32,9 +32,6 @@ private:
 
   void do_read_body();
 
-  // prints non '\0' data characters.
-  void print_data();
-
 private:
   // The socket used to communicate with a TCP client
   boost::asio::ip::tcp::socket tcp_socket_;
@@ -42,9 +39,6 @@ private:
 
   // The socket used to communicate with a UDP client
   // boost::asio::ip::udp::socket udp_socket_;
-
-  // Buffer used to store data received from the client.
-  std::array<char, 1024> data_;
 
   ChatMessage read_msg_;
   std::deque<ChatMessage> write_msgs_;

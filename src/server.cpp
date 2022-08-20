@@ -100,6 +100,12 @@ void Server::handle_console() {
     else if(action == "exit") {
       tcp_acceptor_.close();
       server_online_ = false;
+
+      //while !active_sessions_.empty()
+      for(auto &it : active_sessions_.get_map())
+        it.second->get_tcp_socket().close();
+      
+      // exit(0);
       break;
     }
 

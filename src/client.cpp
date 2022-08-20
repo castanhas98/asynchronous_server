@@ -24,18 +24,18 @@ tcp_resolver_(io_context) {
   // fill in the ip_and_port string with a padded ip and port
   std::size_t max_length_ip = 15;
   std::size_t max_length_port = 5;
-  auto ip_and_port = std::string(
+  auto ip_and_port = "@" + std::string(
     max_length_ip - std::min(
       max_length_ip, tcp_socket_.local_endpoint().address().to_string().size()
     ), 
     ' '
-  ) 
+  )
   + tcp_socket_.local_endpoint().address().to_string();
   ip_and_port = ip_and_port + ":" + std::to_string(tcp_socket_.local_endpoint().port()) +
   std::string(max_length_port - std::min(
     max_length_port, std::to_string(tcp_socket_.local_endpoint().port()).size()),
-      ' ');
-  // std::cout << ip_and_port << std::endl;
+      ' ') + ": ";
+  std::cout << ip_and_port << std::endl;
   std::memcpy(ip_and_port_, &ip_and_port[0], ip_and_port.size());
   // std::cout.write(ip_and_port_, ip_and_port.size());
 
@@ -78,10 +78,10 @@ void Client::do_read_header() {
 void Client::do_read_body() {
   boost::asio::async_read(
     tcp_socket_,
-    boost::asio::buffer(read_msg_.body(), read_msg_.body_length()),
+    boost::asio::buffer(read_msg_.body_with_sender(), read_msg_.body_with_sender_length()),
     [this](boost::system::error_code ec, std::size_t) {
       if (!ec) {
-        std::cout.write(read_msg_.body(), read_msg_.body_length());
+        std::cout.write(read_msg_.body_with_sender(), read_msg_.body_with_sender_length());
         std::cout << "\n";
         do_read_header();
       }
@@ -93,13 +93,13 @@ void Client::do_read_body() {
 
 void Client::do_get_messages() {
   char line[ChatMessage::max_body_length_ + 1];
-  while(std::cin.getline(line, ChatMessage::max_body_length_ + 1)) {
+  while(tcp_socket_.is_open() && std::cin.getline(line, ChatMessage::max_body_length_ + 1)) {
 
     ChatMessage msg;
     msg.body_length(std::strlen(line));
     std::memcpy(msg.body(), line, msg.body_length());
     msg.encode_header();
-    // msg.encode_sender(user_name_, ip_and_port_); 
+    msg.encode_sender(user_name_, ip_and_port_); 
 
     write(msg);
 

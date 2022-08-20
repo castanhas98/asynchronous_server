@@ -50,7 +50,8 @@ class Client {
 
     char user_name_[10 + 1];
 
-    char ip_and_port_[15 + 1 + 5 + 1];
+    // '@' + ip + ':' + port + ": " + 1
+    char ip_and_port_[1 + 15 + 1 + 5 + 2 + 1];
 };
 
 #endif // ASYNCHRONOUS_SERVER_CLIENT_HPP
