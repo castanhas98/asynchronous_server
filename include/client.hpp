@@ -21,8 +21,6 @@ class Client {
     ~Client();
 
   private:
-    void do_echo();
-
     void do_connect(std::string& server_ip, std::string& server_port);
 
     void do_read_header();

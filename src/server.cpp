@@ -14,8 +14,9 @@
 
 Server::Server(boost::asio::io_context& io_context, unsigned short port, unsigned short number_of_rooms) 
 : tcp_acceptor_(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port)),
-  server_online_(true),
-  chat_rooms_(number_of_rooms) {
+  server_online_(true) {
+  // chat_rooms_(number_of_rooms) {
+
     // Spawns a thread that will deal with console inputs on the server
     // This thread is joined in the Server's destructur, which should
     // only be called after the thread has no work left anyway.
@@ -37,12 +38,10 @@ void Server::do_accept() {
           
           new_session->start();
 
-          // active_sessions_.insert(new_session);
           active_sessions_.insert_or_update(
             new_session->get_endpoint_ip_address().to_string() + ":" + std::to_string(new_session->get_endpoint_port()),
             new_session
           );
-          // print_active_sessions();
         }
         do_accept();
       }
@@ -60,11 +59,12 @@ void Server::print_active_sessions() {
   if(active_sessions_snapshot.size() > 0) {
     std::cout << "Printing the IP addresses of clients in active sessions:" << std::endl;
     for(const auto &it : active_sessions_snapshot) {
-      std::cout << "[" << std::this_thread::get_id() << "] ";
-      std::cout << it.first << std::endl;
-
-      if(it.second->get_tcp_socket().is_open())
-        std::cout << "IS OPEN" << std::endl;  
+      if(it.second->get_tcp_socket().is_open()) {
+        std::cout << "[" << std::this_thread::get_id() << "] ";
+        std::cout << it.first << std::endl;
+      }
+      else
+        active_sessions_.erase(it.first); 
     }
   }
   else
@@ -76,19 +76,21 @@ void Server::handle_console() {
 
   // Indications and usage
   auto print_usage = []() {
-    std::cout << "[" << std::this_thread::get_id() << "] ";
+    // std::cout << "[" << std::this_thread::get_id() << "] ";
     std::cout << "Server Commands:" << std::endl;
-    std::cout << "[" << std::this_thread::get_id() << "] ";
+    // std::cout << "[" << std::this_thread::get_id() << "] ";
     std::cout << "active | exit | help \n" << std::endl;
   };
 
   print_usage();
 
   while(server_online_) {
-    std::cout << "[" << std::this_thread::get_id() << "] ";
+    // std::cout << "[" << std::this_thread::get_id() << "] ";
     std::cout << ">>> ";
     std::getline(std::cin, action);
 
+    // Prints the active sessions, that is, all the clients that are
+    // still connected
     if(action == "active") {
       print_active_sessions();
       continue;
@@ -105,7 +107,6 @@ void Server::handle_console() {
       for(auto &it : active_sessions_.get_map())
         it.second->get_tcp_socket().close();
       
-      // exit(0);
       break;
     }
 

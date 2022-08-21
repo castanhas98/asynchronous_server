@@ -1,5 +1,7 @@
 #include "chat.hpp"
 
+// ChatMessage
+
 ChatMessage::ChatMessage()
 : body_length_(0) {}
 
@@ -64,4 +66,37 @@ void ChatMessage::encode_header() {
 void ChatMessage::encode_sender(char* user_name, char* ip_and_port) {
   std::memcpy(data_ + header_length_, user_name, 10);
   std::memcpy(data_ + header_length_ + 10, ip_and_port, user_name_length_ - 10);
+}
+
+
+// ChatRoom
+
+ChatRoom::ChatRoom() {
+
+}
+
+void ChatRoom::join(std::shared_ptr<ChatParticipant> participant)
+{
+  participants_.insert(participant);
+  for (auto msg: recent_messages_)
+    participant->deliver(msg.first); // msg.first is the message, msg.second is the sender
+}
+
+void ChatRoom::leave(std::shared_ptr<ChatParticipant> participant)
+{
+  participants_.erase(participant);
+}
+
+void ChatRoom::deliver(const ChatMessage& msg, const std::shared_ptr<ChatParticipant>& sender)
+{
+  if(participants_.find(sender) != participants_.end()) {
+    recent_messages_.push_back({msg, sender});
+    while (recent_messages_.size() > max_recent_msgs_)
+      recent_messages_.pop_front();
+
+    for (auto participant: participants_) {
+      if(participant != sender)
+        participant->deliver(msg);
+    }
+  }
 }

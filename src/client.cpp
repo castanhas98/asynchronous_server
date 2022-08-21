@@ -35,9 +35,8 @@ tcp_resolver_(io_context) {
   std::string(max_length_port - std::min(
     max_length_port, std::to_string(tcp_socket_.local_endpoint().port()).size()),
       ' ') + ": ";
-  std::cout << ip_and_port << std::endl;
+
   std::memcpy(ip_and_port_, &ip_and_port[0], ip_and_port.size());
-  // std::cout.write(ip_and_port_, ip_and_port.size());
 
   // thread to run the io_context after connecting
   io_context_thread_ = std::thread([&io_context](){ io_context.run(); });
@@ -54,7 +53,7 @@ void Client::do_connect(std::string& server_ip, std::string& server_port) {
   boost::asio::async_connect(
     tcp_socket_,
     tcp_resolver_.resolve(server_ip, server_port),
-    [this](boost::system::error_code ec, boost::asio::ip::tcp::endpoint) {
+    [this](boost::system::error_code ec, boost::asio::ip::tcp::endpoint /*ep*/) {
       if(!ec)
         do_read_header();
     }
@@ -79,7 +78,7 @@ void Client::do_read_body() {
   boost::asio::async_read(
     tcp_socket_,
     boost::asio::buffer(read_msg_.body_with_sender(), read_msg_.body_with_sender_length()),
-    [this](boost::system::error_code ec, std::size_t) {
+    [this](boost::system::error_code ec, std::size_t /*length*/) {
       if (!ec) {
         std::cout.write(read_msg_.body_with_sender(), read_msg_.body_with_sender_length());
         std::cout << "\n";
@@ -99,10 +98,12 @@ void Client::do_get_messages() {
     msg.body_length(std::strlen(line));
     std::memcpy(msg.body(), line, msg.body_length());
     msg.encode_header();
-    msg.encode_sender(user_name_, ip_and_port_); 
+    msg.encode_sender(user_name_, ip_and_port_);
 
     write(msg);
 
+    if(std::string(msg.body(), msg.body() + 7) == "```exit")
+      break;
   }
 }
 
@@ -124,7 +125,7 @@ void Client::do_write() {
   boost::asio::async_write(
     tcp_socket_,
     boost::asio::buffer(write_msgs_.front().data(), write_msgs_.front().length()),
-    [this](boost::system::error_code ec, std::size_t) {
+    [this](boost::system::error_code ec, std::size_t /*length*/) {
       if(!ec) {
         write_msgs_.pop_front();
         if(!write_msgs_.empty())

@@ -36,7 +36,6 @@ private:
 
 private:
   boost::asio::ip::tcp::acceptor tcp_acceptor_;
-  // boost::asio::ip::udp::acceptor udp_acceptor_;
 
   ThreadsafeMap<std::string, std::shared_ptr<Session>> active_sessions_;
 
@@ -46,7 +45,7 @@ private:
 
   ChatRoom room_;
 
-  std::vector<ThreadsafeSet<std::string>> chat_rooms_;
+  // std::vector<ChatRoom> chat_rooms_;
 };
 
 #endif // ASYNCHRONOUS_SERVER_SERVER_HPP

@@ -33,9 +33,7 @@ int main(int argc, char *argv[]) {
     boost::asio::io_context io_context;
 
     Client client(io_context, host_ip, server_port, user_name);
-
-    // t.join();
-
+    
   }
   catch(std::exception& e) {
     std::cerr << "Exception: " << e.what() << std::endl;

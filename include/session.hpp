@@ -14,7 +14,7 @@ public:
   Session(boost::asio::ip::tcp::socket tcp_socket, ChatRoom& room);
 
   const boost::asio::ip::tcp::socket& get_tcp_socket() const;
-  boost::asio::ip::tcp::socket& get_tcp_socket();
+        boost::asio::ip::tcp::socket& get_tcp_socket();
 
   void start();
 
@@ -32,15 +32,15 @@ private:
 
   void do_read_body();
 
+  // if there is a command starting by ```, it finds it and executes the command.
+  void find_command();
+
 private:
   // The socket used to communicate with a TCP client
   boost::asio::ip::tcp::socket tcp_socket_;
 
-
-  // The socket used to communicate with a UDP client
-  // boost::asio::ip::udp::socket udp_socket_;
-
   ChatMessage read_msg_;
+
   std::deque<ChatMessage> write_msgs_;
 
   ChatRoom& room_;
