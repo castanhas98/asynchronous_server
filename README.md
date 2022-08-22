@@ -1,5 +1,7 @@
 # C++ Asynchronous Chat Server
 
+https://user-images.githubusercontent.com/32599626/185932014-5c554b0c-90fd-4aba-87fb-b0f48ebf0d6b.mp4
+
 Based on the examples from [boost::asio](https://www.boost.org/doc/libs/1_80_0/doc/html/boost_asio/examples/cpp11_examples.html). 
 
 As the name indicates, this is an asynchronous chat server that was implemented in an attempt for me to learn more about Concurrency and Networking. 
