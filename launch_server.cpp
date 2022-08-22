@@ -1,5 +1,4 @@
 #include "server.hpp"
-#include "constants.hpp"
 
 #include <iostream>
 #include <exception>
@@ -18,7 +17,7 @@ void async_start_server(boost::asio::io_context& io_context, unsigned short &por
 
 int main(int argc, char *argv[]) {
 
-  unsigned short server_port = DEFAULT_PORT;
+  unsigned short server_port;
   try {
     // can add more error checking for whether the porpt number is valid
     if(argc == 2)
