@@ -52,18 +52,13 @@ void Session::do_write() {
     tcp_socket_,
     boost::asio::buffer(write_msgs_.front().data(), write_msgs_.front().length()),
     [this, self](boost::system::error_code ec, std::size_t /*length*/) {
-      if (!ec)
-      {
-        // std::cout << "inside dowrite" << std::endl;
-        // std::cout.write(write_msgs_.front().body_with_sender(), write_msgs_.front().body_with_sender_length());
-        // std::cout << "\n\n" << std::flush;
+      if (!ec) {
         write_msgs_.pop_front();
         if (!write_msgs_.empty()) {
           do_write();
         }
       }
-      else
-      {
+      else {
         room_.leave(shared_from_this());
       }
     }
@@ -139,35 +134,6 @@ void Session::find_command_and_send() {
 
       std::string target_ip(body + start_ip, body + end_ip);
       std::string target_port(body + start_port, body + end_port);
-      // std::cout << "length of port" << target_port.size() << std::endl;
-      // target_port.push_back('\0');
-      // std::cout << "length of port" << target_port.size() << std::endl;
-
-      std::cout << target_ip << ":" << target_port << std::endl;
-
-      // process message first
-      // char* k = body;
-      // char* j = body + end_port;
-
-      // do {
-      //   *k = *j;
-      //   ++j;
-      //   ++k;
-      // } while(*j != '\0');
-
-      // read_msg_.body_length(read_msg_.body_length() - end_port);
-
-      // std::memmove(body, body + end_port, read_msg_.body_length() - end_port);
-      // std::cout.write(write_msgs_.front().body_with_sender(), write_msgs_.front().body_with_sender_length());
-      
-
-      // std::cout.write(read_msg_.body(), read_msg_.body_length());
-      // std::cout << '\n' << std::flush;
-
-      // std::cout.write(read_msg_.body_with_sender(), read_msg_.body_with_sender_length());
-      // std::cout << '\n' << std::flush;
-
-      // std::cout << "message length:" << read_msg_.body_length();
 
       room_.deliver_to(read_msg_, shared_from_this(), target_ip, target_port);
 

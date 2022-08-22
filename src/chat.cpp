@@ -112,7 +112,6 @@ void ChatRoom::deliver_to(
     auto participant_ip = participant->get_tcp_socket().remote_endpoint().address().to_string();
 
     if(participant_ip == target_ip && participant_port == target_port) {
-      std::cout << "got to the comparison" << std::endl;
       participant->deliver(msg);
       return;
     }

@@ -51,16 +51,16 @@ void Server::do_accept() {
 }
 
 void Server::print_active_sessions() {
-  std::cout << "[" << std::this_thread::get_id() << "] ";
+  // std::cout << "[" << std::this_thread::get_id() << "] ";
   std::map<std::string, std::shared_ptr<Session>> active_sessions_snapshot(
     active_sessions_.get_map()
   );
   
   if(active_sessions_snapshot.size() > 0) {
-    std::cout << "Printing the IP addresses of clients in active sessions:" << std::endl;
+    std::cout << "Printing the IP addresses and ports of clients in active sessions:" << std::endl;
     for(const auto &it : active_sessions_snapshot) {
       if(it.second->get_tcp_socket().is_open()) {
-        std::cout << "[" << std::this_thread::get_id() << "] ";
+        // std::cout << "[" << std::this_thread::get_id() << "] ";
         std::cout << it.first << std::endl;
       }
       else
@@ -111,7 +111,7 @@ void Server::handle_console() {
     }
 
     else if(action == "help") {
-      std::cout << "[" << std::this_thread::get_id() << "] ";
+      // std::cout << "[" << std::this_thread::get_id() << "] ";
       std::cout << "Asynchronous Server - Possible Commands:\n"
                 << "active - prints the IP addresses of clients and ports to which they are connected;\n"
                 << "exit - turns off the server.\n";
