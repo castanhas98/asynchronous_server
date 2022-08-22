@@ -54,6 +54,9 @@ void Session::do_write() {
     [this, self](boost::system::error_code ec, std::size_t /*length*/) {
       if (!ec)
       {
+        // std::cout << "inside dowrite" << std::endl;
+        // std::cout.write(write_msgs_.front().body_with_sender(), write_msgs_.front().body_with_sender_length());
+        // std::cout << "\n\n" << std::flush;
         write_msgs_.pop_front();
         if (!write_msgs_.empty()) {
           do_write();
@@ -92,8 +95,7 @@ void Session::do_read_body() {
     boost::asio::buffer(read_msg_.body_with_sender(), read_msg_.body_with_sender_length()),
     [this, self](boost::system::error_code ec, std::size_t /*length*/) {
       if(!ec) {
-        find_command();
-        room_.deliver(read_msg_, self);
+        find_command_and_send();
         do_read_header();
       }
       else
@@ -104,15 +106,77 @@ void Session::do_read_body() {
   );
 }
 
-void Session::find_command() {
+void Session::find_command_and_send() {
   char *body = read_msg_.body();
 
   if(body[0] == '`' && body[2] == '`' && body[2] == '`') {
     if(std::string(body + 3, body + 7) == "exit") {
       room_.leave(shared_from_this());
       tcp_socket_.close();
+      return;
+    }
+    else if(std::string(body + 3, body + 5) == "to") {
+      
+      int start_ip = 6;
+      int i = 0;
+      bool reached_port = false;
+      int start_port, end_ip, end_port = start_ip + 14 + 6;
+
+      while(i < read_msg_.body_length() && i < end_port) {
+        if(body[start_ip + i] == ':') {
+          reached_port = true;
+          end_ip = start_ip + i;
+          start_port = start_ip + i + 1;
+        }
+
+        if(reached_port && body[start_ip + i] == ' ' || body[start_ip + i] == '\0') {
+          end_port = start_ip + i;
+          break;
+        }
+
+        ++i;
+      }
+
+      std::string target_ip(body + start_ip, body + end_ip);
+      std::string target_port(body + start_port, body + end_port);
+      // std::cout << "length of port" << target_port.size() << std::endl;
+      // target_port.push_back('\0');
+      // std::cout << "length of port" << target_port.size() << std::endl;
+
+      std::cout << target_ip << ":" << target_port << std::endl;
+
+      // process message first
+      // char* k = body;
+      // char* j = body + end_port;
+
+      // do {
+      //   *k = *j;
+      //   ++j;
+      //   ++k;
+      // } while(*j != '\0');
+
+      // read_msg_.body_length(read_msg_.body_length() - end_port);
+
+      // std::memmove(body, body + end_port, read_msg_.body_length() - end_port);
+      // std::cout.write(write_msgs_.front().body_with_sender(), write_msgs_.front().body_with_sender_length());
+      
+
+      // std::cout.write(read_msg_.body(), read_msg_.body_length());
+      // std::cout << '\n' << std::flush;
+
+      // std::cout.write(read_msg_.body_with_sender(), read_msg_.body_with_sender_length());
+      // std::cout << '\n' << std::flush;
+
+      // std::cout << "message length:" << read_msg_.body_length();
+
+      room_.deliver_to(read_msg_, shared_from_this(), target_ip, target_port);
+
+      return;
     }
   }
+
+  room_.deliver(read_msg_, shared_from_this());
+
   
 }
 

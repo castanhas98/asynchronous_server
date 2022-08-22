@@ -100,3 +100,21 @@ void ChatRoom::deliver(const ChatMessage& msg, const std::shared_ptr<ChatPartici
     }
   }
 }
+
+void ChatRoom::deliver_to(
+  const ChatMessage& msg, 
+  const std::shared_ptr<ChatParticipant>& sender, 
+  std::string& target_ip, 
+  std::string& target_port
+) {
+  for(auto& participant : participants_) {
+    auto participant_port = std::to_string(participant->get_tcp_socket().remote_endpoint().port());
+    auto participant_ip = participant->get_tcp_socket().remote_endpoint().address().to_string();
+
+    if(participant_ip == target_ip && participant_port == target_port) {
+      std::cout << "got to the comparison" << std::endl;
+      participant->deliver(msg);
+      return;
+    }
+  }
+}

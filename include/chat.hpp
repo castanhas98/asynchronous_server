@@ -47,6 +47,8 @@ public:
 
   void encode_sender(char* user_name, char* ip_and_port);
 
+
+
 private:
   char data_[header_length_ + user_name_length_ + max_body_length_];
 
@@ -57,6 +59,8 @@ class ChatParticipant {
 public:
   virtual ~ChatParticipant() {}
   virtual void deliver(const ChatMessage& msg) = 0;
+  virtual const boost::asio::ip::tcp::socket& get_tcp_socket() const = 0;
+  virtual       boost::asio::ip::tcp::socket& get_tcp_socket() = 0;
 };
 
 class ChatRoom {
@@ -68,6 +72,8 @@ public:
   void leave(std::shared_ptr<ChatParticipant> participant);
 
   void deliver(const ChatMessage& msg, const std::shared_ptr<ChatParticipant>& sender);
+
+  void deliver_to(const ChatMessage& msg, const std::shared_ptr<ChatParticipant>& sender, std::string& target_ip, std::string& target_port);
 
 private:
   std::set<std::shared_ptr<ChatParticipant>> participants_;

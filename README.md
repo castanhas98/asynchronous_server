@@ -1,21 +1,26 @@
-# Asynchronous Server
+# C++ Asynchronous Chat Server
 
-Based on examples from boost::asio and C++ Concurrency in Action.
+Based on the examples from [boost::asio](https://www.boost.org/doc/libs/1_80_0/doc/html/boost_asio/examples/cpp11_examples.html). 
 
-Ideas:
-- `top`-like command, that says how many clients are using the server.
-- Supporting tcp and udp clients.
+As the name indicates, this is an asynchronous chat server that was implemented in an attempt for me to learn more about Concurrency and Networking. 
+
+The server can handle multiple clients sending messages asynchronously. Each client is identified by a username of up to 10 characters and their IP address and port. The Transmission Control Protocol (TCP) is used to provide a connection-oriented, reliable chat service.
+
+Each server opens a chat room, where clients can see the messages that every other client has sent. Furthermore, clients can send private messages by typing a command like:
+```bash
+```to <ip_address>:<port>
+```
+Naturally, `<ip_address>:<port>` designates the IP address and port of the receiver.
+
+It is also possible for any client that joins a chat room to see the a number of the previously non-private messages sent in that chat room.
+
+In order to manage the active sessions in a safe way, a threadsafe hash map structure is used, adapted from the one in Anthony Williams' "C++ Concurrency in Action".
 
 
-To do (High to Low priority timeline-wise):
-  - Chat between clients:
-    - Sessions are managed by the server?
-    - Client message needs to have a header and a body:
-        - header can have type of message (exit, send) and destination (ip:port), in case of a send message. 
-        - Body can have whatever.
-        - Exit message deletes the session from the client's set and closes it.
-    - Creating a chat session that many clients can join
-    - Client UI
-  - Server close a single connection.
-  - Understand why we need a default value in the thread-safe map.
-  - Understand why we need to delete copy constructor and copy assignment operator. Appendix A.2.
+## Example
+
+
+## How to Install
+
+
+## How to Use

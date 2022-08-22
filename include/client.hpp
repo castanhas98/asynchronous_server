@@ -33,6 +33,8 @@ class Client {
 
     void do_write();
 
+    void find_command_and_process();
+
   private:
     boost::asio::io_context& io_context_;
 

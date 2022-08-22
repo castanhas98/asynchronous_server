@@ -33,7 +33,8 @@ private:
   void do_read_body();
 
   // if there is a command starting by ```, it finds it and executes the command.
-  void find_command();
+  // Sends the message if needed.
+  void find_command_and_send();
 
 private:
   // The socket used to communicate with a TCP client
